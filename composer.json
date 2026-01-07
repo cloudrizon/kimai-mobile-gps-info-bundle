@@ -1,0 +1,26 @@
+{
+    "name": "cloudrizon/kimai-mobile-gps-info-bundle",
+    "description": "GPS location tracking for Kimai timesheet entries from mobile clients",
+    "homepage": "https://github.com/cloudrizon/kimai-mobile-gps-info-bundle",
+    "type": "kimai-plugin",
+    "version": "1.0.0",
+    "keywords": ["kimai", "kimai-plugin", "kimai-mobile", "gps"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cloudrizon",
+            "homepage": "https://www.cloudrizon.com/"
+        }
+    ],
+    "extra": {
+        "kimai": {
+            "require": 20000,
+            "name": "Kimai Mobile GPS Info Plugin"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "KimaiPlugin\\KimaiMobileGPSInfoBundle\\": ""
+        }
+    }
+}

@@ -1,0 +1,6 @@
+# GPS API route configuration
+# Automatically discovers routes from PHP 8 attributes in Controller classes
+gps_controllers:
+    resource: '../../Controller/'
+    type: attribute
+    prefix: /api

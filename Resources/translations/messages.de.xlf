@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages.de.xlf">
+        <body>
+            <trans-unit id="gps.tracking" resname="gps.tracking">
+                <source>gps.tracking</source>
+                <target>GPS-Tracking</target>
+            </trans-unit>
+            <trans-unit id="gps.tracking_enabled" resname="gps.tracking_enabled">
+                <source>gps.tracking_enabled</source>
+                <target>GPS-Tracking aktivieren</target>
+            </trans-unit>
+            <trans-unit id="gps.tracking_enabled.help" resname="gps.tracking_enabled.help">
+                <source>gps.tracking_enabled.help</source>
+                <target>GPS-Standortverfolgung für Zeiterfassungseinträge aktivieren (globale Einstellung)</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking_enabled" resname="gps.user_tracking_enabled">
+                <source>gps.user_tracking_enabled</source>
+                <target>GPS-Tracking aktiviert</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking_enabled.help" resname="gps.user_tracking_enabled.help">
+                <source>gps.user_tracking_enabled.help</source>
+                <target>GPS-Tracking für diesen Benutzer erlauben (erfordert aktivierte globale Einstellung)</target>
+            </trans-unit>
+            <trans-unit id="gps_edit_user_preference" resname="gps_edit_user_preference">
+                <source>gps_edit_user_preference</source>
+                <target>GPS-Tracking-Einstellung für Benutzer bearbeiten</target>
+            </trans-unit>
+            <trans-unit id="gps_view_data" resname="gps_view_data">
+                <source>gps_view_data</source>
+                <target>GPS-Standortdaten anzeigen</target>
+            </trans-unit>
+            <trans-unit id="gps_edit_data" resname="gps_edit_data">
+                <source>gps_edit_data</source>
+                <target>GPS-Standortdaten bearbeiten</target>
+            </trans-unit>
+            <trans-unit id="gps.start_location" resname="gps.start_location">
+                <source>gps.start_location</source>
+                <target>GPS-Startposition</target>
+            </trans-unit>
+            <trans-unit id="gps.stop_location" resname="gps.stop_location">
+                <source>gps.stop_location</source>
+                <target>GPS-Stoppposition</target>
+            </trans-unit>
+            <trans-unit id="gps.coordinate_format_invalid" resname="gps.coordinate_format_invalid">
+                <source>gps.coordinate_format_invalid</source>
+                <target>Ungültiges GPS-Format. Erwartet: "Breitengrad,Längengrad"</target>
+            </trans-unit>
+            <trans-unit id="gps.map.title" resname="gps.map.title">
+                <source>gps.map.title</source>
+                <target>GPS-Standortkarte</target>
+            </trans-unit>
+            <trans-unit id="gps.map.start_marker" resname="gps.map.start_marker">
+                <source>gps.map.start_marker</source>
+                <target>Startposition</target>
+            </trans-unit>
+            <trans-unit id="gps.map.stop_marker" resname="gps.map.stop_marker">
+                <source>gps.map.stop_marker</source>
+                <target>Stoppposition</target>
+            </trans-unit>
+            <trans-unit id="gps.map.no_data" resname="gps.map.no_data">
+                <source>gps.map.no_data</source>
+                <target>Keine GPS-Daten verfügbar</target>
+            </trans-unit>
+            <trans-unit id="gps.map.load_error" resname="gps.map.load_error">
+                <source>gps.map.load_error</source>
+                <target>Karte konnte nicht geladen werden</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking.help.explanation" resname="gps.user_tracking.help.explanation">
+                <source>gps.user_tracking.help.explanation</source>
+                <target>GPS-Tracking erfordert sowohl die globale als auch die Benutzereinstellung aktiviert.</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking.effective_status" resname="gps.user_tracking.effective_status">
+                <source>gps.user_tracking.effective_status</source>
+                <target>Effektiver Status</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking.status.active" resname="gps.user_tracking.status.active">
+                <source>gps.user_tracking.status.active</source>
+                <target>Aktiv</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking.status.inactive" resname="gps.user_tracking.status.inactive">
+                <source>gps.user_tracking.status.inactive</source>
+                <target>Inaktiv</target>
+            </trans-unit>
+            <trans-unit id="gps.user_tracking.status.global_disabled" resname="gps.user_tracking.status.global_disabled">
+                <source>gps.user_tracking.status.global_disabled</source>
+                <target>(globales Tracking ist deaktiviert)</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
