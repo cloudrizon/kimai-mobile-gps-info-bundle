@@ -66,7 +66,7 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
      * to selectively enable/disable GPS tracking for specific users
      * (e.g., for GDPR Article 21 objection requests).
      *
-     * The field is disabled (grayed out) when global GPS tracking is disabled,
+     * The field is hidden when global GPS tracking is disabled,
      * as the user preference has no effect without the global setting.
      *
      * @param UserPreferenceEvent $event The user preference event
@@ -90,7 +90,7 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
         $helpText = $this->buildHelpText($globalEnabled, $effective);
 
         // Field enabled only if: has permission AND global is enabled
-        // When global is disabled, field is grayed out to indicate it has no effect
+        // When global is disabled, field is hidden (Kimai hides disabled preferences)
         $fieldEnabled = $canEdit && $globalEnabled;
 
         $preference = (new UserPreference('gps_tracking_enabled', true))

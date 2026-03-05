@@ -11,6 +11,8 @@ A Symfony bundle for Kimai 2.x that enables GPS location tracking for timesheet 
 - [Configuration](#configuration)
 - [Permissions](#permissions)
 - [Map Visualization](#map-visualization)
+- [API](#api)
+- [Mobile App Behavior](#mobile-app-behavior)
 - [Privacy & GDPR](#privacy--gdpr)
 - [License](#license)
 - [Support](#support)
@@ -21,6 +23,7 @@ A Symfony bundle for Kimai 2.x that enables GPS location tracking for timesheet 
 - Mobile client integration via API
 - Global and per-user GPS tracking controls
 - Interactive map display with Leaflet.js
+- Geofence boundary with optional mobile tracking restriction
 - Role-based visibility and edit permissions
 - Multi-language support (English, German)
 
@@ -100,6 +103,25 @@ Administrators can enable or disable GPS tracking for individual users. This set
 | ON            | OFF          | **Disabled**     |
 | ON            | ON           | **Enabled**      |
 
+The user preference page displays the effective tracking status (Active or Inactive) to help administrators understand the combined result of both settings.
+
+### Geofence Configuration
+
+**Location**: Admin > Settings > GPS Tracking
+
+Define a workplace boundary around a center point with a configurable radius. An interactive map preview shows the configured boundary on the settings page.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Enable Geofence Boundary | Enable or disable geofence checking | Off |
+| Center Latitude | Latitude of the geofence center (-90 to 90) | — |
+| Center Longitude | Longitude of the geofence center (-180 to 180) | — |
+| Radius (meters) | Boundary radius around the center point (10–1000) | — |
+| Notify After (minutes) | Minutes a user must stay inside the boundary before notification (0–60) | 5 |
+| Restrict Mobile Tracking | Prevent mobile users from starting time tracking outside the boundary | Off |
+
+> **Note**: Geofence is disabled by default and operates independently from GPS tracking.
+
 ## Permissions
 
 The plugin provides three configurable permissions in Kimai's role management.
@@ -130,6 +152,40 @@ When viewing or editing a timesheet with GPS data, an interactive map displays t
 - Uses OpenStreetMap tiles (no API key required)
 
 Requirements: User must have `gps_view_data` permission and at least one GPS coordinate must be present.
+
+The admin settings page also shows an interactive map preview when configuring the geofence boundary.
+
+## API
+
+The plugin exposes a configuration endpoint for mobile clients:
+
+- **Endpoint**: `GET /api/gps/config`
+- **Response**: Returns the current GPS tracking status and geofence configuration
+- Used by the Kimai Mobile app to retrieve tracking and geofence settings
+
+## Mobile App Behavior
+
+When GPS tracking and geofence features are enabled on the server, the Kimai Mobile app responds as follows.
+
+### GPS Tracking
+
+- The app automatically captures GPS coordinates when starting and stopping a timer
+- Location data is attached to the timesheet entry and synced to the Kimai server
+- No manual toggle in the app — behavior is controlled entirely by server-side configuration (global setting + user preference)
+- Requires device location permission; no data is captured if permission is denied
+
+### Geofence Notifications
+
+- Users receive a notification when arriving at a configured work area (after the configured dwell time has elapsed)
+- Users receive a notification when leaving a work area while a timer is still running
+- Notifications work in the background, even when the app is not in the foreground (requires background location permission on the device)
+
+### Geofence Restriction
+
+- When enabled, the app prevents starting or stopping a timer if the user is outside all configured work areas
+- The app checks the user's GPS position against server-configured geofences before allowing timer operations
+- If GPS is unavailable, the user is prompted to enable location services
+- This is an admin-enforced setting — users cannot override it
 
 ## Privacy & GDPR
 

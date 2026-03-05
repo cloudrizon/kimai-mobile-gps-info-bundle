@@ -93,6 +93,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
         $this->configService->method('isUserTrackingEnabled')->willReturn(true);
         $this->configService->method('isTrackingEffective')->willReturn(true);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -114,6 +115,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(false);
         $this->configService->method('isUserTrackingEnabled')->willReturn(true);
         $this->configService->method('isTrackingEffective')->willReturn(false);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -123,6 +125,7 @@ class GpsConfigControllerTest extends TestCase
         $this->assertArrayHasKey('global_enabled', $data);
         $this->assertArrayHasKey('user_enabled', $data);
         $this->assertArrayHasKey('effective', $data);
+        $this->assertArrayHasKey('geofences', $data);
     }
 
     /**
@@ -137,6 +140,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
         $this->configService->method('isUserTrackingEnabled')->willReturn(true);
         $this->configService->method('isTrackingEffective')->willReturn(true);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -160,6 +164,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(false);
         $this->configService->method('isUserTrackingEnabled')->willReturn(true);
         $this->configService->method('isTrackingEffective')->willReturn(false);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -183,6 +188,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
         $this->configService->method('isUserTrackingEnabled')->willReturn(false);
         $this->configService->method('isTrackingEffective')->willReturn(false);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -206,6 +212,7 @@ class GpsConfigControllerTest extends TestCase
         $this->configService->method('isGlobalTrackingEnabled')->willReturn(false);
         $this->configService->method('isUserTrackingEnabled')->willReturn(false);
         $this->configService->method('isTrackingEffective')->willReturn(false);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
 
         $controller = $this->createControllerWithUser($user);
         $response = $controller->getConfig();
@@ -314,7 +321,155 @@ class GpsConfigControllerTest extends TestCase
             ->with($user)
             ->willReturn(true);
 
+        $this->configService->expects($this->once())
+            ->method('getGeofencesConfig')
+            ->willReturn([]);
+
         $controller = $this->createControllerWithUser($user);
         $controller->getConfig();
+    }
+
+    // ========================================
+    // Tests for geofences response
+    // ========================================
+
+    /**
+     * Test geofences is empty array when not configured.
+     *
+     * Verifies that the geofences field returns an empty array
+     * when no geofence has been configured.
+     */
+    public function testGeofencesEmptyWhenNotConfigured(): void
+    {
+        $user = $this->createMock(User::class);
+
+        $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
+        $this->configService->method('isUserTrackingEnabled')->willReturn(true);
+        $this->configService->method('isTrackingEffective')->willReturn(true);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
+
+        $controller = $this->createControllerWithUser($user);
+        $response = $controller->getConfig();
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertIsArray($data['geofences']);
+        $this->assertEmpty($data['geofences']);
+    }
+
+    /**
+     * Test geofences contains data when configured.
+     *
+     * Verifies that the geofences field returns an array with
+     * a geofence object when properly configured.
+     */
+    public function testGeofencesContainsDataWhenConfigured(): void
+    {
+        $user = $this->createMock(User::class);
+
+        $geofenceData = [
+            [
+                'id' => 'default',
+                'name' => 'Workplace',
+                'enabled' => true,
+                'center_lat' => 52.5162748,
+                'center_lng' => 13.3774573,
+                'radius' => 500,
+                'notify_after_minutes' => 5,
+                'restrict_mobile_tracking' => false,
+            ],
+        ];
+
+        $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
+        $this->configService->method('isUserTrackingEnabled')->willReturn(true);
+        $this->configService->method('isTrackingEffective')->willReturn(true);
+        $this->configService->method('getGeofencesConfig')->willReturn($geofenceData);
+
+        $controller = $this->createControllerWithUser($user);
+        $response = $controller->getConfig();
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertIsArray($data['geofences']);
+        $this->assertCount(1, $data['geofences']);
+        $this->assertEquals($geofenceData, $data['geofences']);
+    }
+
+    /**
+     * Test geofence object contains all required fields.
+     *
+     * Verifies that when a geofence is configured, all required
+     * fields are present in the response.
+     */
+    public function testGeofenceObjectStructure(): void
+    {
+        $user = $this->createMock(User::class);
+
+        $geofenceData = [
+            [
+                'id' => 'default',
+                'name' => 'Workplace',
+                'enabled' => true,
+                'center_lat' => 52.5162748,
+                'center_lng' => 13.3774573,
+                'radius' => 500,
+                'notify_after_minutes' => 10,
+                'restrict_mobile_tracking' => true,
+            ],
+        ];
+
+        $this->configService->method('isGlobalTrackingEnabled')->willReturn(true);
+        $this->configService->method('isUserTrackingEnabled')->willReturn(true);
+        $this->configService->method('isTrackingEffective')->willReturn(true);
+        $this->configService->method('getGeofencesConfig')->willReturn($geofenceData);
+
+        $controller = $this->createControllerWithUser($user);
+        $response = $controller->getConfig();
+
+        $data = json_decode($response->getContent(), true);
+        $geofence = $data['geofences'][0];
+
+        // Verify all required fields are present
+        $this->assertArrayHasKey('id', $geofence);
+        $this->assertArrayHasKey('name', $geofence);
+        $this->assertArrayHasKey('enabled', $geofence);
+        $this->assertArrayHasKey('center_lat', $geofence);
+        $this->assertArrayHasKey('center_lng', $geofence);
+        $this->assertArrayHasKey('radius', $geofence);
+        $this->assertArrayHasKey('notify_after_minutes', $geofence);
+        $this->assertArrayHasKey('restrict_mobile_tracking', $geofence);
+
+        // Verify field values
+        $this->assertEquals('default', $geofence['id']);
+        $this->assertEquals('Workplace', $geofence['name']);
+        $this->assertTrue($geofence['enabled']);
+        $this->assertEquals(52.5162748, $geofence['center_lat']);
+        $this->assertEquals(13.3774573, $geofence['center_lng']);
+        $this->assertEquals(500, $geofence['radius']);
+        $this->assertEquals(10, $geofence['notify_after_minutes']);
+        $this->assertTrue($geofence['restrict_mobile_tracking']);
+    }
+
+    /**
+     * Test geofences field is always present in response.
+     *
+     * Verifies that the geofences field is included in the response
+     * even when tracking is disabled.
+     */
+    public function testGeofencesAlwaysPresentInResponse(): void
+    {
+        $user = $this->createMock(User::class);
+
+        $this->configService->method('isGlobalTrackingEnabled')->willReturn(false);
+        $this->configService->method('isUserTrackingEnabled')->willReturn(false);
+        $this->configService->method('isTrackingEffective')->willReturn(false);
+        $this->configService->method('getGeofencesConfig')->willReturn([]);
+
+        $controller = $this->createControllerWithUser($user);
+        $response = $controller->getConfig();
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertArrayHasKey('geofences', $data);
     }
 }

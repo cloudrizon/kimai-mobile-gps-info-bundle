@@ -15,6 +15,11 @@ use App\Form\Model\SystemConfiguration;
 use App\Form\Type\YesNoType;
 use KimaiPlugin\KimaiMobileGPSInfoBundle\EventSubscriber\SystemConfigurationSubscriber;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 
 /**
  * Unit tests for SystemConfigurationSubscriber.
@@ -114,9 +119,41 @@ class SystemConfigurationSubscriberTest extends TestCase
         $systemConfig = $configurations[0];
         $fields = $systemConfig->getConfiguration();
 
-        $this->assertCount(1, $fields);
+        // Now we have 7 fields: 1 tracking + 6 geofence
+        $this->assertCount(7, $fields);
         $this->assertInstanceOf(Configuration::class, $fields[0]);
         $this->assertEquals('gps.tracking_enabled', $fields[0]->getName());
+    }
+
+    /**
+     * Test that configuration contains all geofence fields.
+     *
+     * Verifies that all 6 geofence configuration fields exist
+     * with correct names in the expected order.
+     */
+    public function testConfigurationContainsAllGeofenceFields(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+
+        $expectedFields = [
+            'gps.geofence_enabled',
+            'gps.geofence_center_lat',
+            'gps.geofence_center_lng',
+            'gps.geofence_radius',
+            'gps.geofence_notify_after',
+            'gps.geofence_restrict_mobile_tracking',
+        ];
+
+        foreach ($expectedFields as $fieldName) {
+            $field = $systemConfig->getConfigurationByName($fieldName);
+            $this->assertNotNull($field, sprintf('Field "%s" should exist', $fieldName));
+        }
     }
 
     /**
@@ -180,5 +217,205 @@ class SystemConfigurationSubscriberTest extends TestCase
 
         $this->assertNotNull($field);
         $this->assertFalse($field->isRequired());
+    }
+
+    // ========================================
+    // Geofence Field Tests
+    // ========================================
+
+    /**
+     * Test geofence enabled field properties.
+     *
+     * Verifies type, default value, and that field is optional.
+     */
+    public function testGeofenceEnabledFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_enabled');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(YesNoType::class, $field->getType());
+        $this->assertFalse($field->getValue());
+        $this->assertFalse($field->isRequired());
+    }
+
+    /**
+     * Test geofence center latitude field properties.
+     *
+     * Verifies type, default value, and constraints (Regex + Callback for range).
+     * Note: TextType is used instead of NumberType to preserve decimal precision
+     * when saving to Kimai's Configuration entity.
+     */
+    public function testGeofenceCenterLatFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_center_lat');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(TextType::class, $field->getType());
+        $this->assertNull($field->getValue());
+        $this->assertFalse($field->isRequired());
+
+        // Check Regex and Callback constraints exist
+        $constraints = $field->getConstraints();
+        $this->assertCount(2, $constraints);
+        $this->assertInstanceOf(Regex::class, $constraints[0]);
+        $this->assertInstanceOf(Callback::class, $constraints[1]);
+    }
+
+    /**
+     * Test geofence center longitude field properties.
+     *
+     * Verifies type, default value, and constraints (Regex + Callback for range).
+     * Note: TextType is used instead of NumberType to preserve decimal precision
+     * when saving to Kimai's Configuration entity.
+     */
+    public function testGeofenceCenterLngFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_center_lng');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(TextType::class, $field->getType());
+        $this->assertNull($field->getValue());
+        $this->assertFalse($field->isRequired());
+
+        // Check Regex and Callback constraints exist
+        $constraints = $field->getConstraints();
+        $this->assertCount(2, $constraints);
+        $this->assertInstanceOf(Regex::class, $constraints[0]);
+        $this->assertInstanceOf(Callback::class, $constraints[1]);
+    }
+
+    /**
+     * Test geofence radius field properties.
+     *
+     * Verifies type, default value, and Range constraint (10-1000).
+     */
+    public function testGeofenceRadiusFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_radius');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(IntegerType::class, $field->getType());
+        $this->assertNull($field->getValue());
+        $this->assertFalse($field->isRequired());
+
+        // Check Range constraint exists
+        $constraints = $field->getConstraints();
+        $this->assertNotEmpty($constraints);
+        $this->assertInstanceOf(Range::class, $constraints[0]);
+        $this->assertEquals(10, $constraints[0]->min);
+        $this->assertEquals(1000, $constraints[0]->max);
+    }
+
+    /**
+     * Test geofence notify after field properties.
+     *
+     * Verifies type, default value (5), and Range constraint (0-60).
+     */
+    public function testGeofenceNotifyAfterFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_notify_after');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(IntegerType::class, $field->getType());
+        $this->assertEquals(5, $field->getValue());
+        $this->assertFalse($field->isRequired());
+
+        // Check Range constraint exists
+        $constraints = $field->getConstraints();
+        $this->assertNotEmpty($constraints);
+        $this->assertInstanceOf(Range::class, $constraints[0]);
+        $this->assertEquals(0, $constraints[0]->min);
+        $this->assertEquals(60, $constraints[0]->max);
+    }
+
+    /**
+     * Test geofence restrict mobile tracking field properties.
+     *
+     * Verifies type, default value (false), and that field is optional.
+     */
+    public function testGeofenceRestrictMobileTrackingFieldProperties(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+        $field = $systemConfig->getConfigurationByName('gps.geofence_restrict_mobile_tracking');
+
+        $this->assertNotNull($field);
+        $this->assertEquals(YesNoType::class, $field->getType());
+        $this->assertFalse($field->getValue());
+        $this->assertFalse($field->isRequired());
+    }
+
+    /**
+     * Test all geofence fields have help text configured.
+     *
+     * Verifies that each geofence field has a help text option.
+     */
+    public function testAllGeofenceFieldsHaveHelpText(): void
+    {
+        $subscriber = new SystemConfigurationSubscriber();
+        $event = new SystemConfigurationEvent([]);
+
+        $subscriber->onSystemConfiguration($event);
+
+        $configurations = $event->getConfigurations();
+        $systemConfig = $configurations[0];
+
+        $geofenceFields = [
+            'gps.geofence_enabled',
+            'gps.geofence_center_lat',
+            'gps.geofence_center_lng',
+            'gps.geofence_radius',
+            'gps.geofence_notify_after',
+            'gps.geofence_restrict_mobile_tracking',
+        ];
+
+        foreach ($geofenceFields as $fieldName) {
+            $field = $systemConfig->getConfigurationByName($fieldName);
+            $this->assertNotNull($field, sprintf('Field "%s" should exist', $fieldName));
+
+            $options = $field->getOptions();
+            $this->assertArrayHasKey('help', $options, sprintf('Field "%s" should have help option', $fieldName));
+            $this->assertEquals($fieldName . '.help', $options['help']);
+        }
     }
 }

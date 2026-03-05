@@ -86,6 +86,54 @@
                 <source>gps.user_tracking.status.global_disabled</source>
                 <target>(globales Tracking ist deaktiviert)</target>
             </trans-unit>
+            <trans-unit id="gps.geofence_enabled" resname="gps.geofence_enabled">
+                <source>gps.geofence_enabled</source>
+                <target>Geofence-Grenze aktivieren</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_enabled.help" resname="gps.geofence_enabled.help">
+                <source>gps.geofence_enabled.help</source>
+                <target>Arbeitsplatzgrenze aktivieren, um Benutzer zu benachrichtigen, wenn sie sich ausserhalb des definierten Bereichs befinden</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_center_lat" resname="gps.geofence_center_lat">
+                <source>gps.geofence_center_lat</source>
+                <target>Breitengrad (Zentrum)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_center_lat.help" resname="gps.geofence_center_lat.help">
+                <source>gps.geofence_center_lat.help</source>
+                <target>Breitengrad des Geofence-Mittelpunkts in Dezimalgrad (-90 bis 90)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_center_lng" resname="gps.geofence_center_lng">
+                <source>gps.geofence_center_lng</source>
+                <target>Laengengrad (Zentrum)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_center_lng.help" resname="gps.geofence_center_lng.help">
+                <source>gps.geofence_center_lng.help</source>
+                <target>Laengengrad des Geofence-Mittelpunkts in Dezimalgrad (-180 bis 180)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_radius" resname="gps.geofence_radius">
+                <source>gps.geofence_radius</source>
+                <target>Radius (Meter)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_radius.help" resname="gps.geofence_radius.help">
+                <source>gps.geofence_radius.help</source>
+                <target>Grenzradius um den Mittelpunkt in Metern (10-1000)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_notify_after" resname="gps.geofence_notify_after">
+                <source>gps.geofence_notify_after</source>
+                <target>Benachrichtigen nach (Minuten)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_notify_after.help" resname="gps.geofence_notify_after.help">
+                <source>gps.geofence_notify_after.help</source>
+                <target>Minuten, die der Benutzer innerhalb der Grenze bleiben muss, bevor die Benachrichtigung ausgeloest wird (0=sofort, max 60)</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_restrict_mobile_tracking" resname="gps.geofence_restrict_mobile_tracking">
+                <source>gps.geofence_restrict_mobile_tracking</source>
+                <target>Mobile Zeiterfassung einschraenken</target>
+            </trans-unit>
+            <trans-unit id="gps.geofence_restrict_mobile_tracking.help" resname="gps.geofence_restrict_mobile_tracking.help">
+                <source>gps.geofence_restrict_mobile_tracking.help</source>
+                <target>Verhindern, dass mobile Benutzer die Zeiterfassung ausserhalb der Geofence-Grenze starten</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
